@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IoT Troubleshooter — AI-Powered Smart Device Support</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NAV
+════════════════════════════════════════════════════════════════ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo" aria-label="IoT Troubleshooter home">
+      <span class="nav-logo-icon" aria-hidden="true">
+        <!-- Minimal signal/radio wave icon -->
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="11" r="2" fill="white" fill-opacity="0.9"/>
+          <path d="M4.5 7.5a5 5 0 0 1 7 0" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.7"/>
+          <path d="M2 5a8 8 0 0 1 12 0" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4"/>
+        </svg>
+      </span>
+      <span>IoT Troubleshooter</span>
+    </a>
+    <div class="nav-links">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#chat" class="nav-link nav-link-cta">Troubleshooter</a>
+      <a href="#how"  class="nav-link">How It Works</a>
+    </div>
+    <!-- System status indicators -->
+    <div class="nav-status" id="navStatus" aria-live="polite">
+      <span class="status-dot status-checking" id="statusAI"></span>
+      <span class="status-label" id="statusAILabel">Checking…</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════ -->
+<section id="home" class="hero">
+
+  <!-- Subtle ambient background — handled purely by CSS -->
+  <!-- heroCanvas kept in DOM so existing JS doesn't error, but hidden -->
+  <canvas id="heroCanvas" aria-hidden="true" style="display:none"></canvas>
+
+  <!-- Ambient glow orbs (CSS only) -->
+  <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+
+    <!-- ── LEFT COLUMN — copy ─────────────────────────────── -->
+    <div class="hero-copy">
+
+      <!-- Eyebrow -->
+      <div class="hero-eyebrow" aria-label="AI-Powered IoT Support">
+        <span class="hero-eyebrow-dot" aria-hidden="true"></span>
+        AI-Powered IoT Support
+      </div>
+
+      <!-- Heading -->
+      <h1 class="hero-title">
+        IoT<br>
+        <span class="hero-title-accent">Troubleshooter</span>
+      </h1>
+
+      <!-- Supporting text -->
+      <p class="hero-desc">
+        Diagnose connected-device problems and get clear,
+        step-by-step solutions in seconds.
+      </p>
+
+      <!-- Dual CTA row -->
+      <div class="hero-cta-row">
+        <a href="#chat" class="btn btn-hero-primary">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <path d="M2 7.5h9M7.5 3l4.5 4.5L7.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Start Troubleshooting
+        </a>
+        <a href="#how" class="btn btn-hero-secondary">
+          See How It Works
+        </a>
+      </div>
+
+      <!-- AI status badge -->
+      <div class="hero-status-badge" id="heroStatusBadge" aria-live="polite">
+        <span class="hero-status-dot"></span>
+        <span class="hero-status-label" id="heroStatusLabel">AI Assistant Online</span>
+      </div>
+
+    </div><!-- /hero-copy -->
+
+    <!-- ── RIGHT COLUMN — IoT visualization ──────────────── -->
+    <div class="hero-viz" aria-hidden="true">
+
+      <!-- SVG connection lines (drawn behind nodes) -->
+      <svg class="hero-viz-lines" viewBox="0 0 340 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Router → Bulb -->
+        <line class="viz-line viz-line-1" x1="170" y1="170" x2="90"  y2="68"/>
+        <!-- Router → Camera -->
+        <line class="viz-line viz-line-2" x1="170" y1="170" x2="268" y2="82"/>
+        <!-- Router → Plug -->
+        <line class="viz-line viz-line-3" x1="170" y1="170" x2="56"  y2="222"/>
+        <!-- Router → Phone -->
+        <line class="viz-line viz-line-4" x1="170" y1="170" x2="284" y2="230"/>
+        <!-- Router → Sensor -->
+        <line class="viz-line viz-line-5" x1="170" y1="170" x2="170" y2="292"/>
+        <!-- Travelling data pulse dots along each line -->
+        <circle class="viz-pulse viz-pulse-1" r="3" fill="#38bdf8"/>
+        <circle class="viz-pulse viz-pulse-2" r="3" fill="#4f8ef7"/>
+        <circle class="viz-pulse viz-pulse-3" r="3" fill="#38bdf8"/>
+        <circle class="viz-pulse viz-pulse-4" r="3" fill="#4f8ef7"/>
+        <circle class="viz-pulse viz-pulse-5" r="3" fill="#7c7ffc"/>
+      </svg>
+
+      <!-- Centre hub — router/Wi-Fi -->
+      <div class="viz-node viz-hub">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <circle cx="13" cy="18" r="2.5" fill="#4f8ef7"/>
+          <path d="M7 12.5a8.5 8.5 0 0 1 12 0"   stroke="#4f8ef7" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M4 9a13 13 0 0 1 18 0"         stroke="#4f8ef7" stroke-width="1.4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M1.5 6a16.5 16.5 0 0 1 23 0"  stroke="#4f8ef7" stroke-width="1.2" stroke-linecap="round" opacity="0.25"/>
+        </svg>
+        <span class="viz-node-label">Router</span>
+      </div>
+
+      <!-- Smart Bulb — top-left -->
+      <div class="viz-node viz-bulb">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M11 2a6 6 0 0 1 4.5 9.9l-.5.6V16H7v-3.5l-.5-.6A6 6 0 0 1 11 2z" stroke="#fbbf24" stroke-width="1.4" fill="none"/>
+          <path d="M8 18h6M9 20.5h4" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span class="viz-node-label">Smart Bulb</span>
+      </div>
+
+      <!-- Smart Camera — top-right -->
+      <div class="viz-node viz-camera">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="2" y="6" width="14" height="10" rx="2" stroke="#38bdf8" stroke-width="1.4" fill="none"/>
+          <path d="M16 9l4-2v8l-4-2V9z" stroke="#38bdf8" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
+          <circle cx="9" cy="11" r="2.5" stroke="#38bdf8" stroke-width="1.2" fill="none"/>
+        </svg>
+        <span class="viz-node-label">Camera</span>
+      </div>
+
+      <!-- Smart Plug — mid-left -->
+      <div class="viz-node viz-plug">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="5" y="2" width="12" height="14" rx="3" stroke="#34d399" stroke-width="1.4" fill="none"/>
+          <path d="M8 16v4M14 16v4" stroke="#34d399" stroke-width="1.4" stroke-linecap="round"/>
+          <rect x="8" y="6" width="2" height="4" rx="1" fill="#34d399" opacity="0.7"/>
+          <rect x="12" y="6" width="2" height="4" rx="1" fill="#34d399" opacity="0.7"/>
+        </svg>
+        <span class="viz-node-label">Smart Plug</span>
+      </div>
+
+      <!-- Smartphone — mid-right -->
+      <div class="viz-node viz-phone">
+        <svg width="20" height="22" viewBox="0 0 20 22" fill="none">
+          <rect x="3" y="1" width="14" height="20" rx="3" stroke="#a78bfa" stroke-width="1.4" fill="none"/>
+          <circle cx="10" cy="18" r="1.2" fill="#a78bfa" opacity="0.7"/>
+          <path d="M7 5h6" stroke="#a78bfa" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+        <span class="viz-node-label">Smartphone</span>
+      </div>
+
+      <!-- IoT Sensor — bottom-center -->
+      <div class="viz-node viz-sensor">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="4" y="6" width="14" height="10" rx="2" stroke="#38bdf8" stroke-width="1.4" fill="none"/>
+          <path d="M8 11h2l1.5-3 2 6 1.5-3H17" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M4 6V4M18 6V4" stroke="#38bdf8" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+        <span class="viz-node-label">IoT Sensor</span>
+      </div>
+
+    </div><!-- /hero-viz -->
+
+  </div><!-- /hero-inner -->
+
+  <!-- Feature strip below -->
+  <div class="hero-features" aria-hidden="false">
+    <div class="hero-feature">
+      <div class="hero-feature-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="13" r="2" fill="#4f8ef7" fill-opacity="0.9"/>
+          <path d="M5 9a5.6 5.6 0 0 1 8 0"  stroke="#4f8ef7" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M2 6a9.5 9.5 0 0 1 14 0" stroke="#4f8ef7" stroke-width="1.3" stroke-linecap="round" opacity="0.45"/>
+        </svg>
+      </div>
+      <span>Connectivity Diagnosis</span>
+    </div>
+    <div class="hero-feature-divider" aria-hidden="true"></div>
+    <div class="hero-feature">
+      <div class="hero-feature-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="2.5" stroke="#4f8ef7" stroke-width="1.4" fill="none"/>
+          <path d="M9 1v2M9 15v2M1 9h2M15 9h2M3 3l1.5 1.5M13.5 13.5L15 15M3 15l1.5-1.5M13.5 4.5L15 3" stroke="#4f8ef7" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+        </svg>
+      </div>
+      <span>AI Root-Cause Analysis</span>
+    </div>
+    <div class="hero-feature-divider" aria-hidden="true"></div>
+    <div class="hero-feature">
+      <div class="hero-feature-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M3 5h12M3 9h8M3 13h5" stroke="#4f8ef7" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="15" cy="13" r="2.5" stroke="#4f8ef7" stroke-width="1.3" fill="none"/>
+          <path d="M14 13l.8.8 1.7-1.7" stroke="#4f8ef7" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span>Step-by-Step Fixes</span>
+    </div>
+    <div class="hero-feature-divider" aria-hidden="true"></div>
+    <div class="hero-feature">
+      <div class="hero-feature-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 1l2 5.5H17l-4.5 3.3 1.7 5.2L9 12l-5.2 3 1.7-5.2L1 6.5h6z" stroke="#4f8ef7" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <span>RAG Knowledge Base</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STATUS BANNER (env / network errors)
+════════════════════════════════════════════════════════════════ -->
+<div id="statusBanner" class="banner" role="alert"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAT SECTION
+════════════════════════════════════════════════════════════════ -->
+<section id="chat" class="chat-section">
+  <div class="section-header">
+    <h2 class="section-title">Ask the Troubleshooter</h2>
+    <p class="section-sub">Describe your IoT problem in plain language and get instant guidance.</p>
+  </div>
+
+  <!-- Device selector -->
+  <div class="device-selector" aria-label="Select your device type">
+    <span class="device-selector-label">What are you troubleshooting?</span>
+    <div class="device-chips">
+      <button class="device-chip" data-device="Smart Bulb"    data-placeholder="e.g. My smart bulb is not turning on…">💡 Smart Bulb</button>
+      <button class="device-chip" data-device="Smart Plug"    data-placeholder="e.g. My smart plug went offline…">🔌 Smart Plug</button>
+      <button class="device-chip" data-device="Smart Camera"  data-placeholder="e.g. My smart camera won't connect after password change…">📷 Smart Camera</button>
+      <button class="device-chip" data-device="Smart Speaker" data-placeholder="e.g. My smart speaker is not responding…">🔊 Smart Speaker</button>
+      <button class="device-chip" data-device="IoT Sensor"    data-placeholder="e.g. My IoT sensor stopped reporting data…">📡 IoT Sensor</button>
+    </div>
+  </div>
+
+  <!-- Example problem chips -->
+  <div class="examples" aria-label="Example queries">
+    <span class="examples-label">Try an example</span>
+    <div class="example-chips">
+      <button class="chip" data-query="My smart bulb is not connecting to Wi-Fi.">Smart bulb won't connect</button>
+      <button class="chip" data-query="My smart plug went offline and I can't control it.">Smart plug offline</button>
+      <button class="chip" data-query="I changed my Wi-Fi password and now my smart camera won't connect.">Camera after password change</button>
+      <button class="chip" data-query="My IoT sensor stopped reporting data.">Sensor not reporting</button>
+      <button class="chip" data-query="My smart speaker is not responding to voice commands.">Smart speaker unresponsive</button>
+    </div>
+  </div>
+
+  <!-- Chat container -->
+  <main class="chat-container" role="main">
+
+    <!-- Chat header bar -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <!-- AI avatar -->
+        <div class="chat-header-avatar" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="13" r="1.8" fill="white" fill-opacity="0.9"/>
+            <path d="M5 9a5.5 5.5 0 0 1 8 0" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+            <path d="M2.5 6.5a9 9 0 0 1 13 0" stroke="white" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.45"/>
+          </svg>
+          <span class="chat-header-avatar-pulse" aria-hidden="true"></span>
+        </div>
+        <div class="chat-header-info">
+          <span class="chat-header-name">IoT AI Assistant</span>
+          <span class="chat-header-status">
+            <span class="chat-ai-dot"></span>
+            Online · RAG-Enhanced
+          </span>
+        </div>
+        <span class="chat-model-tag">GPT-OSS-120B</span>
+      </div>
+      <!-- Context badge (filled by JS when device is selected) -->
+      <div class="chat-header-right">
+        <span class="device-context-badge" id="deviceContextBadge" aria-live="polite"></span>
+        <button id="clearBtn" class="btn btn-ghost" aria-label="Clear conversation">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Message area -->
+    <div id="chatArea" class="chat-area" aria-live="polite" aria-label="Conversation">
+
+      <!-- Welcome message -->
+      <div class="message bot-message">
+        <div class="avatar bot-avatar" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="13" r="1.8" fill="currentColor" fill-opacity="0.9"/>
+            <path d="M5 9a5.5 5.5 0 0 1 8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+            <path d="M2.5 6.5a9 9 0 0 1 13 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="bubble welcome-bubble">
+          <p class="welcome-greeting">Hello — I'm your <strong>IoT Troubleshooter</strong> assistant.</p>
+          <p class="welcome-sub">Select a device above or describe your problem — I'll provide structured, step-by-step troubleshooting guidance.</p>
+          <div class="welcome-hint">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.6"/><path d="M6 5v3M6 3.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Use the example chips or type your own problem below
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /chatArea -->
+
+    <!-- Input area -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <textarea
+          id="userInput"
+          rows="1"
+          placeholder="Describe your IoT problem…"
+          aria-label="Your message"
+          maxlength="800"
+        ></textarea>
+        <div class="input-hint" id="inputHint">
+          <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line
+        </div>
+      </div>
+      <button id="sendBtn" class="btn btn-send" aria-label="Send message">
+        <span class="send-label">Send</span>
+        <span class="send-icon" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path d="M2 7.5h10M8 3l4.5 4.5L8 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+
+  </main><!-- /chat-container -->
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════════════════ -->
+<section id="how" class="how-section">
+  <div class="section-header">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">From your problem to a structured solution in four steps.</p>
+  </div>
+
+  <div class="pipeline">
+
+    <div class="pipeline-step">
+      <div class="pipeline-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M3 4h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="#4f8ef7" stroke-width="1.4" fill="none"/>
+          <path d="M6 16l2-2h4l2 2" stroke="#4f8ef7" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="10" cy="9" r="1.5" fill="#4f8ef7" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="pipeline-content">
+        <div class="pipeline-label">User Problem</div>
+        <p class="pipeline-desc">Describe your IoT issue in plain, natural language.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-connector" aria-hidden="true"></div>
+
+    <div class="pipeline-step">
+      <div class="pipeline-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="3" width="16" height="14" rx="2" stroke="#4f8ef7" stroke-width="1.4" fill="none"/>
+          <path d="M6 7h8M6 10h6M6 13h4" stroke="#4f8ef7" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="pipeline-content">
+        <div class="pipeline-label">RAG Knowledge Retrieval</div>
+        <p class="pipeline-desc">Relevant troubleshooting knowledge is retrieved from the IoT knowledge base using TF-IDF similarity.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-connector" aria-hidden="true"></div>
+
+    <div class="pipeline-step">
+      <div class="pipeline-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7" stroke="#4f8ef7" stroke-width="1.4" fill="none"/>
+          <path d="M7 10l2 2 4-4" stroke="#4f8ef7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="pipeline-content">
+        <div class="pipeline-label">AI Analysis — GPT-OSS-120B</div>
+        <p class="pipeline-desc">The model reasons over the retrieved context and your problem description to form a solution.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-connector" aria-hidden="true"></div>
+
+    <div class="pipeline-step">
+      <div class="pipeline-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10h12M10 4l6 6-6 6" stroke="#4f8ef7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5"/>
+          <path d="M2 16h16" stroke="#4f8ef7" stroke-width="1.4" stroke-linecap="round" opacity="0.3"/>
+          <rect x="3" y="3" width="14" height="11" rx="1.5" stroke="#4f8ef7" stroke-width="1.4" fill="none"/>
+          <path d="M7 7h6M7 10h4" stroke="#4f8ef7" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>
+        </svg>
+      </div>
+      <div class="pipeline-content">
+        <div class="pipeline-label">Troubleshooting Solution</div>
+        <p class="pipeline-desc">A structured response with Problem · Cause · Steps · Escalation.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════════ -->
+<footer class="page-footer">
+  <div class="footer-inner">
+    <span>IoT Troubleshooter</span>
+    <span class="footer-sep">·</span>
+    <span>Powered by Groq &amp; openai/gpt-oss-120b</span>
+    <span class="footer-sep">·</span>
+    <span>RAG-enhanced AI support</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     API calls (/chat, /health) and conversation history are unchanged.
+     All new code is purely UI/DOM — no backend changes.
+════════════════════════════════════════════════════════════════ -->
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+const history = [];        // [{role, content}, …]  — conversation history
+let selectedDevice = null; // currently selected device chip
+
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const chatArea     = document.getElementById("chatArea");
+const userInput    = document.getElementById("userInput");
+const sendBtn      = document.getElementById("sendBtn");
+const clearBtn     = document.getElementById("clearBtn");
+const statusBanner = document.getElementById("statusBanner");
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CANVAS — animated IoT node network (hero background)
+// ══════════════════════════════════════════════════════════════════════════════
+(function initCanvas() {
+  const canvas = document.getElementById("heroCanvas");
+  if (!canvas) return;
+  // Respect reduced-motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    canvas.style.display = "none";
+    return;
+  }
+  const ctx = canvas.getContext("2d");
+  let W, H, nodes;
+  const NODE_COUNT = 28;
+  const MAX_DIST   = 140;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function makeNode() {
+    return {
+      x:  Math.random() * W,
+      y:  Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r:  Math.random() * 2 + 1.5
+    };
+  }
+
+  function init() {
+    resize();
+    nodes = Array.from({ length: NODE_COUNT }, makeNode);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Move nodes
+    nodes.forEach(n => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+    });
+    // Draw lines
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          const alpha = (1 - dist / MAX_DIST) * 0.18;
+          ctx.strokeStyle = `rgba(99,102,241,${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    // Draw dots
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(99,102,241,0.55)";
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener("resize", () => { resize(); });
+  init();
+  draw();
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// HEALTH CHECK + SYSTEM STATUS
+// ══════════════════════════════════════════════════════════════════════════════
+window.addEventListener("DOMContentLoaded", () => {
+  const dotEl     = document.getElementById("statusAI");
+  const labelEl   = document.getElementById("statusAILabel");
+  const heroLabel = document.getElementById("heroStatusLabel");
+  const heroBadge = document.getElementById("heroStatusBadge");
+  const heroDot   = heroBadge ? heroBadge.querySelector(".hero-status-dot") : null;
+
+  fetch("/health")
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "degraded") {
+        const missing = (data.missing_env || []).join(", ");
+        showBanner(
+          `⚠️ Missing environment variable(s): <strong>${missing}</strong>. ` +
+          `Fill in your <code>.env</code> file and restart the server.`,
+          "warn"
+        );
+        dotEl.className     = "status-dot status-warn";
+        labelEl.textContent = "Config issue";
+        // Update hero badge to warn state
+        if (heroBadge) { heroBadge.className = "hero-status-badge hero-status-warn"; }
+        if (heroLabel) heroLabel.textContent  = "Config Issue";
+        if (heroDot)   heroDot.style.background = "var(--warn)";
+      } else {
+        dotEl.className     = "status-dot status-online";
+        labelEl.textContent = "AI Online · KB Ready";
+        if (heroLabel) heroLabel.textContent  = "AI Assistant Online";
+      }
+    })
+    .catch(() => {
+      showBanner("⚠️ Could not reach the server. Make sure app.py is running.", "error");
+      dotEl.className     = "status-dot status-error";
+      labelEl.textContent = "Server offline";
+      if (heroBadge) { heroBadge.className = "hero-status-badge hero-status-error"; }
+      if (heroLabel) heroLabel.textContent  = "Server Offline";
+      if (heroDot)   heroDot.style.background = "var(--error)";
+    });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DEVICE SELECTOR
+// ══════════════════════════════════════════════════════════════════════════════
+document.querySelectorAll(".device-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    // Deselect all
+    document.querySelectorAll(".device-chip").forEach(c => c.classList.remove("device-chip-active"));
+    // Select this one
+    chip.classList.add("device-chip-active");
+    selectedDevice = chip.dataset.device;
+    // Update textarea placeholder
+    userInput.placeholder = chip.dataset.placeholder;
+    // Update device context badge in chat header
+    const badge = document.getElementById("deviceContextBadge");
+    if (badge) {
+      badge.textContent = chip.dataset.device;
+      badge.classList.add("device-context-badge--active");
+    }
+    userInput.focus();
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════════════════════
+function showBanner(html, type) {
+  statusBanner.innerHTML = html;
+  statusBanner.className = `banner ${type}`;
+}
+
+function hideBanner() {
+  statusBanner.className = "banner";
+  statusBanner.innerHTML = "";
+}
+
+function scrollToBottom() {
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function escHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AI RESPONSE PARSER
+// ══════════════════════════════════════════════════════════════════════════════
+function parseAIResponse(text) {
+  const sections = { problem: null, cause: null, steps: [], unresolved: null, raw: text };
+  const problemMatch    = text.match(/Problem:\s*([\s\S]*?)(?=Likely Cause:|$)/i);
+  const causeMatch      = text.match(/Likely Cause:\s*([\s\S]*?)(?=Troubleshooting Steps:|$)/i);
+  const stepsMatch      = text.match(/Troubleshooting Steps:\s*([\s\S]*?)(?=If unresolved:|$)/i);
+  const unresolvedMatch = text.match(/If unresolved:\s*([\s\S]*?)$/i);
+
+  if (problemMatch)    sections.problem    = problemMatch[1].trim();
+  if (causeMatch)      sections.cause      = causeMatch[1].trim();
+  if (unresolvedMatch) sections.unresolved = unresolvedMatch[1].trim();
+  if (stepsMatch) {
+    sections.steps = stepsMatch[1].trim()
+      .split(/\n/)
+      .map(l => l.replace(/^\d+\.\s*/, "").trim())
+      .filter(l => l.length > 0);
+  }
+  return sections;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BUILD AI BUBBLE (structured cards)
+// ══════════════════════════════════════════════════════════════════════════════
+function buildAIBubble(text) {
+  const s = parseAIResponse(text);
+
+  if (!s.problem && !s.cause && s.steps.length === 0) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+    return { bubble, isStructured: false };
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble bubble-structured";
+
+  if (s.problem) {
+    bubble.innerHTML += `
+      <div class="resp-block resp-problem">
+        <div class="resp-label">Problem</div>
+        <div class="resp-body">${escHtml(s.problem)}</div>
+      </div>`;
+  }
+  if (s.cause) {
+    bubble.innerHTML += `
+      <div class="resp-block resp-cause">
+        <div class="resp-label">Likely Cause</div>
+        <div class="resp-body">${escHtml(s.cause)}</div>
+      </div>`;
+  }
+  if (s.steps.length) {
+    const stepsHtml = s.steps
+      .map((step, i) => `<div class="step-row"><span class="step-num">${i + 1}</span><span class="step-text">${escHtml(step)}</span></div>`)
+      .join("");
+    bubble.innerHTML += `
+      <div class="resp-block resp-steps">
+        <div class="resp-label">Troubleshooting Steps</div>
+        <div class="steps-list">${stepsHtml}</div>
+      </div>`;
+  }
+  if (s.unresolved) {
+    bubble.innerHTML += `
+      <div class="resp-block resp-unresolved">
+        <div class="resp-label">If Unresolved</div>
+        <div class="resp-body">${escHtml(s.unresolved)}</div>
+      </div>`;
+  }
+  return { bubble, isStructured: true };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// APPEND MESSAGE
+// ══════════════════════════════════════════════════════════════════════════════
+function appendMessage(role, text) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `message ${role === "user" ? "user-message" : "bot-message"}`;
+
+  const avatar = document.createElement("div");
+  avatar.className = role === "user" ? "avatar user-avatar" : "avatar bot-avatar";
+  avatar.setAttribute("aria-hidden", "true");
+  if (role === "user") {
+    avatar.innerHTML = `<span>You</span>`;
+  } else {
+    avatar.innerHTML = `<svg width="14" height="14" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="13" r="1.8" fill="currentColor" fill-opacity="0.9"/><path d="M5 9a5.5 5.5 0 0 1 8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/><path d="M2.5 6.5a9 9 0 0 1 13 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.5"/></svg>`;
+  }
+
+  let bubble;
+  let isStructured = false;
+
+  if (role !== "user") {
+    const result = buildAIBubble(text);
+    bubble = result.bubble;
+    isStructured = result.isStructured;
+  } else {
+    bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+  }
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(bubble);
+  chatArea.appendChild(wrapper);
+  scrollToBottom();
+
+  // Post-response UI enhancements for structured AI replies
+  if (isStructured) {
+    appendFollowUps(text);
+    appendResolutionControls();
+  }
+
+  return wrapper;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SUGGESTED FOLLOW-UP QUESTIONS
+// ══════════════════════════════════════════════════════════════════════════════
+const FOLLOWUP_POOL = [
+  "How do I perform a factory reset on this device?",
+  "Could this be a 2.4 GHz vs 5 GHz Wi-Fi issue?",
+  "Why does this problem keep happening?",
+  "What if resetting the device doesn't work?",
+  "How do I check if the firmware needs an update?",
+  "Could my router settings be causing this?",
+  "What does the LED light pattern mean?",
+];
+
+function appendFollowUps(text) {
+  // Pick 3 contextually plausible suggestions
+  let picks = [];
+  if (/wi.?fi|network|connect/i.test(text))  picks.push(FOLLOWUP_POOL[1]);
+  if (/reset|factory/i.test(text))           picks.push(FOLLOWUP_POOL[0]);
+  if (/firmware|update/i.test(text))         picks.push(FOLLOWUP_POOL[4]);
+  if (/router|password/i.test(text))         picks.push(FOLLOWUP_POOL[5]);
+  if (/LED|light|blink/i.test(text))         picks.push(FOLLOWUP_POOL[6]);
+  // Pad to 3 with generic ones if needed
+  const fallbacks = [FOLLOWUP_POOL[2], FOLLOWUP_POOL[3], FOLLOWUP_POOL[0]];
+  for (const f of fallbacks) {
+    if (picks.length >= 3) break;
+    if (!picks.includes(f)) picks.push(f);
+  }
+  picks = picks.slice(0, 3);
+
+  const row = document.createElement("div");
+  row.className = "followup-row";
+  row.innerHTML = `<span class="followup-label">Suggested follow-ups</span>`;
+
+  picks.forEach(q => {
+    const btn = document.createElement("button");
+    btn.className = "followup-chip";
+    btn.textContent = q;
+    btn.addEventListener("click", () => {
+      userInput.value = q;
+      userInput.dispatchEvent(new Event("input"));
+      userInput.focus();
+      // Remove this followup row so it doesn't stack
+      row.remove();
+    });
+    row.appendChild(btn);
+  });
+
+  chatArea.appendChild(row);
+  scrollToBottom();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RESOLUTION CONTROLS
+// ══════════════════════════════════════════════════════════════════════════════
+function appendResolutionControls() {
+  const row = document.createElement("div");
+  row.className = "resolution-row";
+
+  const solvedBtn = document.createElement("button");
+  solvedBtn.className = "resolution-btn resolution-solved";
+  solvedBtn.innerHTML = "Problem Solved";
+
+  const troubleBtn = document.createElement("button");
+  troubleBtn.className = "resolution-btn resolution-trouble";
+  troubleBtn.innerHTML = "Still Having Trouble";
+
+  solvedBtn.addEventListener("click", () => {
+    row.innerHTML = `<div class="resolution-confirm">Issue resolved. Glad we could help.</div>`;
+    scrollToBottom();
+  });
+
+  troubleBtn.addEventListener("click", () => {
+    row.remove();
+    // Use existing chat to guide user — no new API
+    userInput.placeholder = "Please describe what happened after trying those steps…";
+    userInput.focus();
+    document.getElementById("chat").scrollIntoView({ behavior: "smooth" });
+    // Small hint message in chat
+    const hint = document.createElement("div");
+    hint.className = "message bot-message";
+    hint.innerHTML = `
+      <div class="avatar bot-avatar" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="13" r="1.8" fill="currentColor" fill-opacity="0.9"/><path d="M5 9a5.5 5.5 0 0 1 8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/><path d="M2.5 6.5a9 9 0 0 1 13 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.5"/></svg></div>
+      <div class="bubble"><p>No problem — please describe what happened after trying those steps and I'll dig deeper.</p></div>`;
+    chatArea.appendChild(hint);
+    scrollToBottom();
+  });
+
+  row.appendChild(solvedBtn);
+  row.appendChild(troubleBtn);
+  chatArea.appendChild(row);
+  scrollToBottom();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LOADING INDICATOR — "Analyzing your problem…" + RAG status panel
+// ══════════════════════════════════════════════════════════════════════════════
+function appendLoadingIndicator() {
+  const wrapper = document.createElement("div");
+  wrapper.className = "message bot-message";
+  wrapper.id = "loadingIndicator";
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar bot-avatar";
+  avatar.setAttribute("aria-hidden", "true");
+  avatar.innerHTML = `<svg width="14" height="14" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="13" r="1.8" fill="currentColor" fill-opacity="0.9"/><path d="M5 9a5.5 5.5 0 0 1 8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/><path d="M2.5 6.5a9 9 0 0 1 13 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.5"/></svg>`;
+
+  const body = document.createElement("div");
+  body.className = "loading-body";
+  body.innerHTML = `
+    <div class="loading-text">Analyzing your problem<span class="loading-dots"><span></span><span></span><span></span></span></div>
+    <div class="rag-status" id="ragStatus">
+      <div class="rag-step" id="ragStep1">
+        <span class="rag-check">◌</span> Understanding the problem
+      </div>
+      <div class="rag-step" id="ragStep2">
+        <span class="rag-check">◌</span> Searching troubleshooting knowledge
+      </div>
+      <div class="rag-step" id="ragStep3">
+        <span class="rag-check">◌</span> Generating solution
+      </div>
+    </div>`;
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(body);
+  chatArea.appendChild(wrapper);
+  scrollToBottom();
+
+  // Timed visual progression — purely cosmetic, matches real backend duration
+  setTimeout(() => markRagStep("ragStep1"), 200);
+  setTimeout(() => markRagStep("ragStep2"), 900);
+  setTimeout(() => markRagStep("ragStep3"), 1800);
+}
+
+function markRagStep(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add("rag-step-done");
+  el.querySelector(".rag-check").textContent = "✓";
+}
+
+function removeLoadingIndicator() {
+  const el = document.getElementById("loadingIndicator");
+  if (el) el.remove();
+}
+
+function setInputEnabled(enabled) {
+  userInput.disabled = !enabled;
+  sendBtn.disabled   = !enabled;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SEND MESSAGE  — /chat API call unchanged
+// ══════════════════════════════════════════════════════════════════════════════
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+
+  hideBanner();
+  userInput.value = "";
+  userInput.style.height = "";
+
+  appendMessage("user", text);
+  history.push({ role: "user", content: text });
+
+  setInputEnabled(false);
+  appendLoadingIndicator();
+
+  try {
+    const response = await fetch("/chat", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ message: text, history: history.slice(0, -1) }),
+    });
+
+    const data = await response.json();
+    removeLoadingIndicator();
+
+    if (!response.ok || data.error) {
+      const errMsg = data.error || "An unexpected error occurred.";
+      appendMessage("assistant", `⚠️ ${errMsg}`);
+      showBanner(`Error: ${errMsg}`, "error");
+      history.pop();
+    } else {
+      appendMessage("assistant", data.reply);
+      history.push({ role: "assistant", content: data.reply });
+    }
+  } catch (networkErr) {
+    removeLoadingIndicator();
+    const msg = "Network error — could not reach the server.";
+    appendMessage("assistant", `⚠️ ${msg}`);
+    showBanner(msg, "error");
+    history.pop();
+  } finally {
+    setInputEnabled(true);
+    userInput.focus();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ══════════════════════════════════════════════════════════════════════════════
+sendBtn.addEventListener("click", sendMessage);
+
+userInput.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Auto-resize textarea
+userInput.addEventListener("input", () => {
+  userInput.style.height = "auto";
+  userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
+});
+
+// Clear chat
+clearBtn.addEventListener("click", () => {
+while (chatArea.children.length > 1) {
+  chatArea.removeChild(chatArea.lastChild);
+}
+history.length = 0;
+hideBanner();
+userInput.value = "";
+userInput.style.height = "";
+// Reset device selector
+document.querySelectorAll(".device-chip").forEach(c => c.classList.remove("device-chip-active"));
+selectedDevice = null;
+userInput.placeholder = "Describe your IoT problem…";
+// Clear context badge
+const badge = document.getElementById("deviceContextBadge");
+if (badge) { badge.textContent = ""; badge.classList.remove("device-context-badge--active"); }
+userInput.focus();
+});
+
+// Example chips
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    userInput.value = chip.dataset.query;
+    userInput.dispatchEvent(new Event("input"));
+    document.getElementById("chat").scrollIntoView({ behavior: "smooth" });
+    userInput.focus();
+  });
+});
+
+// Smooth nav scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener("click", e => {
+    const target = document.querySelector(a.getAttribute("href"));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+});
+
+// Intersection Observer — fade-in sections on scroll
+const observerOpts = { threshold: 0.12 };
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("section-visible");
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOpts);
+
+document.querySelectorAll(".feature-card, .pipeline-step, .chat-container, .how-section")
+  .forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
